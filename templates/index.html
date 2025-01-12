@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatbot with Reset</title>
+  <style>
+    /* Existing styles remain unchanged */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f4f4f4;
+    }
+
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: 600px;
+      height: 80vh;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .chat-header {
+      background-color: #007bff;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-size: 1.5em;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .chat-messages {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 15px;
+      background-color: #f9f9f9;
+    }
+
+    .messages {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .message {
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 10px;
+      max-width: 70%;
+    }
+
+    .user-message {
+      background-color: #d1ecf1;
+      align-self: flex-end;
+    }
+
+    .bot-message {
+      background-color: #c3e6cb;
+      align-self: flex-start;
+    }
+
+    .welcome-message {
+      text-align: center;
+      color: #999;
+    }
+
+    .chat-input {
+      display: flex;
+      padding: 10px;
+      background-color: #fff;
+      border-top: 1px solid #ddd;
+    }
+
+    .chat-input input {
+      flex-grow: 1;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px 0 0 5px;
+      font-size: 1em;
+    }
+
+    .chat-input button {
+      padding: 10px 20px;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+      border-radius: 0 5px 5px 0;
+    }
+
+    .chat-input button:hover {
+      background-color: #0056b3;
+    }
+
+    .reset-button {
+      text-align: center;
+      padding: 10px;
+      background-color: #ff4d4d;
+      color: white;
+      cursor: pointer;
+      border: none;
+      width: 100%;
+      font-size: 1em;
+    }
+
+    .reset-button:hover {
+      background-color: #cc0000;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <header class="chat-header">
+      <span>&#129302;</span>
+      Sanrakshak
+    </header>
+    <div id="chatMessages" class="chat-messages">
+      <div class="welcome-message">
+        <p>Welcome to E-Commerce Sales Chatbot!</p>
+        <p>I'm Bot, your digital guardian.</p>
+      </div>
+    </div>
+    <div class="chat-input">
+      <input id="userInput" type="text" placeholder="Type your message here...">
+      <button id="sendButton">Send</button>
+    </div>
+    <button class="reset-button" id="resetButton">Reset Chat</button>
+  </div>
+
+  <script>
+    const chatMessages = document.getElementById('chatMessages');
+    const userInput = document.getElementById('userInput');
+    const sendButton = document.getElementById('sendButton');
+    const resetButton = document.getElementById('resetButton');
+
+    sendButton.addEventListener('click', async () => {
+      const message = userInput.value.trim();
+
+      if (message) {
+        // Add user message
+        appendMessage(message, 'user-message');
+
+        try {
+          // Send user input to Flask and get the response
+          const response = await fetch('/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message }),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            appendMessage(data.response, 'bot-message');
+          } else {
+            appendMessage('Error: Unable to get a response.', 'bot-message');
+          }
+        } catch (error) {
+          appendMessage('Error: Unable to connect to the server.', 'bot-message');
+        }
+
+        userInput.value = '';
+      }
+    });
+
+    resetButton.addEventListener('click', () => {
+      chatMessages.innerHTML = '<div class="welcome-message"><p>Welcome to OneStep Social!</p><p>I\'m Sanrakshak, your digital guardian.</p></div>';
+    });
+
+    function appendMessage(text, className) {
+      const messageElement = document.createElement('div');
+      messageElement.classList.add('message', className);
+      messageElement.textContent = text;
+      chatMessages.appendChild(messageElement);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+  </script>
+</body>
+</html>
+
