@@ -8,7 +8,7 @@ app = Flask(__name__, template_folder="templates")
 CORS(app)  # Enable Cross-Origin Resource Sharing
 
 # Load pre-trained model and tokenizer
-MODEL_NAME = os.getenv("MODEL_NAME", "distilgpt2")  # Default to a smaller model for deployment
+MODEL_NAME = os.getenv("MODEL_NAME", "distilgpt2")  # Use "distilgpt2" for faster, lighter model loading
 try:
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, force_download=False)
     model = AutoModelForCausalLM.from_pretrained(MODEL_NAME, force_download=False)
@@ -53,6 +53,6 @@ def chat():
 
 # Run the Flask app
 if __name__ == "__main__":
-    port = int(os.getenv("PORT", 8080))  # Use PORT from environment variable if available
+    port = int(os.getenv("PORT", 8080))  # Use PORT from environment variable for Render
     from waitress import serve
     serve(app, host="0.0.0.0", port=port)
